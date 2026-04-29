@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>工资计算器</title>
+<style>
+  @import "https://lsong.org/css/stylesheet.css";
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold
+  }
+
+  input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    box-sizing: border-box
+  }
+
+  button {
+    background: #007AFF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px
+  }
+
+  .card {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 16px;
+    margin: 12px 0
+  }
+
+  .green {
+    color: #07c160;
+    font-weight: bold
+  }
+
+  .red {
+    color: #ff3333;
+    font-weight: bold
+  }
+
+  .note {
+    font-size: 12px;
+    color: #999;
+    margin-top: 4px
+  }
+</style>
+
+<body>
+
+    <h2>工资计算器</h2>
+
+    <div class="card">
+      <div class="item">
+        <label>税前工资</label>
+        <input type="number" id="salary" value="6500">
+        <div class="note">用于计算个税和公司支出</div>
+      </div>
+      <div class="item">
+        <label>社保缴费基数</label>
+        <input type="number" id="socialBase" value="7162">
+        <div class="note">养老8% + 医疗2% + 失业0.5% + 大病3元</div>
+      </div>
+      <div class="item">
+        <label>公积金缴费基数</label>
+        <input type="number" id="fundBase" value="6500">
+        <div class="note">基数 × 个人比例 = 个人扣款</div>
+      </div>
+      <div class="item">
+        <label>公积金比例（%）</label>
+        <input type="number" id="fundRate" value="5">
+        <div class="note">公司和个人各缴相同比例</div>
+      </div>
+      <div class="item">
+        <label>个税起征点</label>
+        <input type="number" id="taxFree" value="5000">
+        <div class="note">(税前 − 社保 − 公积金 − 起征点) × 3%</div>
+      </div>
+      <div class="item">
+        <label>公司社保比例（%）</label>
+        <input type="number" id="companySocialRate" value="26.5">
+        <div class="note">公司社保 = 基数 × 公司比例</div>
+      </div>
+      <button onclick="calc()">计算</button>
+    </div>
+
+    <div id="result"></div>
+</body>
+<script>
+  function calc() {
+    // 读取输入框
+    const salary = +document.getElementById('salary').value
+    const socialBase = +document.getElementById('socialBase').value
+    const fundBase = +document.getElementById('fundBase').value
+    const fundRate = +document.getElementById('fundRate').value / 100
+    const taxFree = +document.getElementById('taxFree').value
+    const companySocialRate = +document.getElementById('companySocialRate').value / 100
+
+    // 个人社保 = 养老8% + 医疗2% + 失业0.5% + 大病3元
+    const personalSocial =
+      socialBase * 0.08   // 养老
+      + socialBase * 0.02 // 医疗
+      + socialBase * 0.005 // 失业
+      + 3; // 北京大病统筹 3 元
+
+    // 个人公积金
+    const personalFund = fundBase * fundRate
+
+    // 个税
+    const taxable = salary - personalSocial - personalFund - taxFree
+    const tax = Math.max(0, taxable * 0.03)
+
+    // 实发工资
+    const realTake = salary - personalSocial - personalFund - tax
+
+    // 公司部分
+    const companySocial = socialBase * companySocialRate
+    const companyFund = fundBase * fundRate
+    const companyTotal = salary + companySocial + companyFund
+
+    // 输出
+    document.getElementById('result').innerHTML = `
+<div class="card">
+  <h4>🧾 员工实发</h4>
+  <p>税前工资：${salary.toFixed(2)}</p>
+  <p>个人社保：${personalSocial.toFixed(2)}</p>
+  <p>个人公积金：${personalFund.toFixed(2)}</p>
+  <p>个税：${tax.toFixed(2)}</p>
+  <p class="green">✅ 实发工资：${realTake.toFixed(2)}</p>
+</div>
+
+<div class="card">
+  <h4>🏦 公司成本</h4>
+  <p>公司社保：${companySocial.toFixed(2)}</p>
+  <p>公司公积金：${companyFund.toFixed(2)}</p>
+  <p class="red">合计：${companyTotal.toFixed(2)} 元</p>
+</div>
+`
+  }
+  calc()
+</script>

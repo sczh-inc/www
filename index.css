@@ -3,7 +3,9 @@
 @import url(https://lsong.org/stylesheets/card.css);
 @import url(https://lsong.org/stylesheets/details.css);
  
-/* ===== 常见问题 ===== */
+.navbar nav {
+  font-size: 12px;
+}
 
 .hero {
   padding: 5rem 0;
@@ -83,7 +85,6 @@
 
 /* ===== 页脚 ===== */
 .footer {
-  padding: 2rem 0 1rem;
 }
 
 .footer-col h4 {
@@ -111,11 +112,22 @@
 }
 
 .footer-bottom {
-  text-align: center;
   font-size: 0.9rem;
   color: #888;
   padding-top: 1rem;
   border-top: 1px solid #eee;
+  display: flex;
+  justify-content: center;
+}
+
+.icp {
+  gap: 3px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.icp img {
+  display: inline;
 }
 
 /* ===== 卡片内链接 ===== */
